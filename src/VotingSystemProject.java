@@ -22,17 +22,17 @@ public class VotingSystemProject {
      * @param args the command line arguments
      */
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         // TODO code application logic here
-        /* Chargement du driver JDBC pour MySQL */
+        // Chargement du driver JDBC pour MySQL 
         try {
             Class.forName( "com.mysql.jdbc.Driver" );
         } catch ( ClassNotFoundException e ) {
-            /* Gérer les éventuelles erreurs ici. */
+            // Gérer les éventuelles erreurs ici. 
             System.out.println("Echec de chargement du driver");
             return;
         }
-                /* Connexion à la base de données */
+                // Connexion à la base de données 
         String url = "jdbc:mysql://localhost:3306/base1";
         String utilisateur = "louis";
         String motDePasse = "azerty";
@@ -50,18 +50,18 @@ public class VotingSystemProject {
             
 
         } catch ( SQLException e ) {
-            /* Gérer les éventuelles erreurs ici */
+            // Gérer les éventuelles erreurs ici 
             System.out.println("Echec de la connexion:"+e.getMessage());
         } finally {
             if ( connexion != null )
                 try {
-                    /* Fermeture de la connexion */
+                    // Fermeture de la connexion 
                     connexion.close();
                 } catch ( SQLException ignore ) {
-                    /* Si une erreur survient lors de la fermeture, il suffit de l'ignorer. */
+                    // Si une erreur survient lors de la fermeture, il suffit de l'ignorer. 
                      System.out.println("Echec fermeture de la connexion:"+ignore.getMessage());
                 }
         }
     }
-    
+    */
 }
