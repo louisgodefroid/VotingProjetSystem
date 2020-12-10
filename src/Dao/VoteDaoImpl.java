@@ -1,5 +1,9 @@
+package Dao;
 
+
+import Dao.VoteDao;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Formatter;
@@ -43,6 +47,10 @@ public class VoteDaoImpl implements VoteDao {
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("INSERT INTO VOTE(voter_id,candidate_id,election_id) VALUES (%d,%d,%d)", a.getVoter().getId(),a.getCandidate().getId(),a.getElection().getId());
             int resultat = statement.executeUpdate(sb.toString());
+            ResultSet gk = statement.getGeneratedKeys();
+            if (gk.next()) {
+                a.setId(gk.getInt(1));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(VoteDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());

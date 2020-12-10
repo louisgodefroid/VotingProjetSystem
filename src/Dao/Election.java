@@ -1,3 +1,5 @@
+package Dao;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,13 +12,15 @@
  */
 public class Election {
     private int id;
-    String state;
-    String date;
-    int etat;/// 
-    static final int BEFORE_ELECTION=1;
-    static final int ELECTION_DAY=2;
-    static final int AFTER_ELECTION=3;
-public int getId ()
+    private String state;
+    private String date;
+    private int etat;
+    
+    public static final int BEFORE_ELECTION=1;
+    public static final int ELECTION_DAY=2;
+    public static final int AFTER_ELECTION=3;
+    
+    public int getId ()
     {
         return id;
     }

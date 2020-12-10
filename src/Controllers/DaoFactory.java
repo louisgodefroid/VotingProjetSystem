@@ -1,4 +1,18 @@
+package Controllers;
 
+
+import Dao.VoteDaoImpl;
+import Dao.VoteDao;
+import Dao.CandidateDaoImpl;
+import Dao.CandidateDao;
+import Dao.ElectionDaoImpl;
+import Dao.ElectionDao;
+import Dao.ResultDaoImpl;
+import Dao.ResultDao;
+import Dao.UserDao;
+import Dao.UserDaoImpl;
+import Dao.VoterDaoImpl;
+import Dao.VoterDao;
 import java.sql.Connection;
 
 /*
@@ -13,6 +27,7 @@ import java.sql.Connection;
  */
 public class DaoFactory {
      private Connection connexion;
+
      public Connection getConnexion ()
      {
          return connexion;

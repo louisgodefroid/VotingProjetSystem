@@ -1,3 +1,12 @@
+package Views;
+
+import Controllers.DaoFactory;
+import Controllers.UserController;
+import Dao.User;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -6,17 +15,59 @@
 
 /**
  *
- * @author eunyeong seok
+ * @author Louis
  */
 public class UserView extends javax.swing.JFrame {
-
+    private UserController userCtl;
     /**
      * Creates new form UserView
      */
     public UserView() {
         initComponents();
+        Connection cx = getConnection();
+        if (cx != null)
+        {
+            DaoFactory dao = new DaoFactory(cx);
+            userCtl = new UserController(dao);
+        }
     }
 
+    private Connection getConnection()
+    {
+        try {
+            Class.forName( "com.mysql.jdbc.Driver" );
+        } catch ( ClassNotFoundException e ) {
+            // Gérer les éventuelles erreurs ici. 
+            System.out.println("Echec de chargement du driver");
+            return null;
+        }
+                // Connexion à la base de données 
+        String url = "jdbc:mysql://localhost:3306/base1";
+        String utilisateur = "louis";
+        String motDePasse = "azerty";
+        
+        try {
+            return DriverManager.getConnection( url, utilisateur, motDePasse );
+        } catch ( SQLException e ) {
+            // Gérer les éventuelles erreurs ici 
+            System.out.println("Echec de la connexion:"+e.getMessage());
+        }
+        return null;
+    }
+    
+    private void closeConnection(Connection cx)
+    {
+        if ( cx != null )
+        {
+            try {
+                // Fermeture de la connexion 
+                cx.close();
+            } catch ( SQLException ignore ) {
+                // Si une erreur survient lors de la fermeture, il suffit de l'ignorer. 
+                System.out.println("Echec fermeture de la connexion:"+ignore.getMessage());
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -90,7 +141,13 @@ public class UserView extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+        String email = jTextField1.getText();
+        String pwd = new String(jPasswordField1.getPassword());
+        User u = userCtl.connect(email, pwd);
+        if (u != null)
+        {
+            
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

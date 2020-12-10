@@ -1,3 +1,5 @@
+package Dao;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,33 +18,19 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author louis
+ *@author louis
  */
-public class ResultDaoImpl implements ResultDao {
+public class UserDaoImpl implements UserDao {
     private Connection connexion;
 
-    public ResultDaoImpl (Connection cx)   
+    public UserDaoImpl (Connection cx)   
     {
         connexion=cx;
     }
-
-   @Override
-    public boolean create(Result a) {
-         try {
-             
-             if(a.getCandidate()==null) 
-             {
-                 System.out.println("Erreur Candidat null");
-                 return false;
-                 
-             }
-             if(a.getElection()==null) 
-             {
-                 System.out.println("Erreur Election null");
-                 return false;
-                 
-             }
-             if(find(a.getCandidate(),a.getElection())!=null) /// on verifie que le resultat n'existe pas deja
+    @Override
+    public boolean create(User a) {
+        try {
+            if(find(a.getFirst_name(),a.getLast_name())!=null) /// verif qu'on ait pas deux fois le meme
             {
                 return false;
             }
@@ -51,62 +39,65 @@ public class ResultDaoImpl implements ResultDao {
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO Result(Candidate_id,Election_id,ballot_count) VALUES (%d,%d,%d)",a.getCandidate().getId(),a.getElection().getId(),a.getBallotCount());
+            formatter.format("INSERT INTO User(first_name,last_name,email,password,role) VALUES ('%s','%s','%s','%s',%d)", a.getFirst_name(),a.getLast_name(),a.getEmail(),a.getPassword(),a.getRole());
             int resultat = statement.executeUpdate(sb.toString());
+            ResultSet gk = statement.getGeneratedKeys();
+            if (gk.next()) {
+                a.setId(gk.getInt(1));
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(ResultDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
-        
         return true;
     }
 
     @Override
-    public boolean delete(Result a) {
+    public boolean delete(User a) {
         try {
-            
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("DELETE FROM RESULT WHERE  election_id=%d AND candidate_id=%d",a.getElection().getId(),a.getCandidate().getId());
+            formatter.format("DELETE FROM USER WHERE  id=%d",a.getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
-            Logger.getLogger(ResultDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
-        
         return true;
     }
 
     @Override
-    public Result find(Candidate a, Election b) {
-          try {
+    public User find(String email,String password) {
+        try {
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("SELECT *FROM RESULT WHERE candidate_id=%d AND election_id=%d ",a.getId(),b.getId());
+            formatter.format("SELECT *FROM USER WHERE email='%s' AND password='%s' ",email,password);
             ResultSet resultat = statement.executeQuery(sb.toString());
             if(resultat.next())
             {
-                Result u=new Result();
-                u.setCandidate(a);
-                u.setElection(b);
-                u.setBallotCount(resultat.getInt("ballot_count"));
+                User u=new User();
+                u.setId(resultat.getInt("id"));
+                u.setFirst_name(resultat.getString("first_name"));
+                u.setLast_name(resultat.getString("last_name"));
+                u.setEmail(resultat.getString("email"));
+                u.setPassword(resultat.getString("password"));
+                u.setRole(resultat.getInt("role"));
                 return u;
             }
-           
         }
         catch(SQLException ex) {
-            Logger.getLogger(ResultDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
-        
         }
         return null;
     }
+    
     
 }

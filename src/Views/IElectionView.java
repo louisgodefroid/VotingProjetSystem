@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package Views;
+
+import Dao.Candidate;
 
 /**
  *
- *@author louis
+ * @author Louis
  */
-public interface ResultDao {
-    boolean create (Result a);
-    boolean delete(Result a);
-    Result find (Candidate a,Election b);
+public interface IElectionView {
+    // add a candidate to the displayed list
+    void addCandidate(Candidate c);
     
 }

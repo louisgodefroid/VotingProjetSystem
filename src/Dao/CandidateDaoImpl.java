@@ -1,4 +1,9 @@
+package Dao;
 
+
+import Controllers.DaoFactory;
+import Views.ICandidateView;
+import Views.IElectionView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,18 +23,23 @@ import java.util.logging.Logger;
  *
  * @author louis
  */
-public class ElectionDaoImpl implements ElectionDao {
+public class CandidateDaoImpl implements CandidateDao{
     private Connection connexion;
 
-    public ElectionDaoImpl (Connection cx)   
+    public CandidateDaoImpl (Connection cx)   
     {
         connexion=cx;
     }
 
     @Override
-    public boolean create(Election a) {
-        try {
-            if(find(a.getState(),a.getDate())!=null) /// verif qu'on ait pas deux fois le meme
+    public boolean create(Candidate a) {
+         try {
+             if(a.getElection()==null)
+             {
+                 System.out.println("Erreur objet election manquant");
+                 return false;
+             }
+            if(find(a.getUser())!=null) /// verif qu'on ait pas deux fois le meme
             {
                 return false;
             }
@@ -39,10 +49,14 @@ public class ElectionDaoImpl implements ElectionDao {
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO ELECTION(state,date,etat,election) VALUES ('%s','%s',%d)", a.getState(),a.getDate(),a.getEtat());
+            formatter.format("INSERT INTO CANDIDATE(user_id,description,election_id) VALUES (%d,'%s',%d)", a.getUser().getId(),a.getDescription(),a.getElection().getId());
             int resultat = statement.executeUpdate(sb.toString());
+            ResultSet gk = statement.getGeneratedKeys();
+            if (gk.next()) {
+                a.setId(gk.getInt(1));
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
@@ -51,71 +65,75 @@ public class ElectionDaoImpl implements ElectionDao {
     }
 
     @Override
-    public boolean delete(Election a) {
+    public boolean delete(Candidate a) {
         try {
-            
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("DELETE FROM ELECTION WHERE  state='%s' AND date='%s' ",a.getState(),a.getDate());
+            formatter.format("DELETE FROM CANDIDATE WHERE  id=%d",a.getId());
             int resultat = statement.executeUpdate(sb.toString());
+            
+            // delete the corresponding user too
+            DaoFactory factory = new DaoFactory(connexion);
+            UserDao dao=factory.getUserDao();
+            User u = new User();
+            u.setId(a.getUser().getId());
+            dao.delete(u);
         } catch (SQLException ex) {
-            Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
-        
         return true;
     }
 
     @Override
-    public Election find(String state, String date) {
-        
+    public Candidate find(User u) {
         try {
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("SELECT *FROM ELECTION WHERE state='%s' AND date='%s' ",state,date);
+            formatter.format("SELECT * FROM CANDIDATE WHERE user_id=%d",u.getId());
             ResultSet resultat = statement.executeQuery(sb.toString());
             if(resultat.next())
             {
-                Election u=new Election();
-                u.setId(resultat.getInt("id"));
-                u.setState(resultat.getString("state"));
-                u.setDate(resultat.getString("date"));
-                u.setEtat(resultat.getInt("etat"));
-                return u;
+                Candidate c=new Candidate();
+                c.setId(resultat.getInt("id"));
+                c.setUser(u);
+                c.setDescription(resultat.getString("description"));
+                DaoFactory factory = new DaoFactory(connexion);
+                ElectionDao dao = factory.getElectionDao();
+                c.setElection(dao.load(u.getId()));
+                return c;
             }
-           
         }
         catch(SQLException ex) {
-            Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
-        
         }
         return null;
     }
+    
     @Override
-      public boolean updateEtat (Election a)
-      {
-           try {
-            
+    public boolean subscribe(Candidate a, Election e)
+    {
+        try {
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
+           
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("UPTDATE ELECTION SET ETAT=%d WHERE  state='%s' AND date='%s' ",a.getEtat(),a.getState(),a.getDate());
+            formatter.format("UPDATE CANDIDATE SET election_id=%d WHERE id=%d", e.getId(),a.getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
-            Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
-        
-        return true;
-      
-      }
+        return true;        
+    }
+    
 }
