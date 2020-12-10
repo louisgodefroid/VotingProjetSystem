@@ -1,3 +1,8 @@
+package Dao;
+
+import Views.ICandidateView;
+import Views.IElectionView;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,10 +14,12 @@
  * @author louis
  */
 public interface ElectionDao {
+    Election load(int election_id);
     boolean create (Election a);
     boolean delete(Election a);
     Election find (String state,String date);
+    Election find(int id);
     boolean updateEtat (Election a);
-    
-    
+    boolean fillCandidateList(Election e, IElectionView view); 
+    boolean fillElectionList(ICandidateView view);
 }

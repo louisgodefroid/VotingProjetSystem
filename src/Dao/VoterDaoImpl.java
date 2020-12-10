@@ -1,3 +1,5 @@
+package Dao;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,20 +18,20 @@ import java.util.logging.Logger;
 
 /**
  *
- *@author louis
+ * @author louis
  */
-public class UserDaoImpl implements UserDao {
+public class VoterDaoImpl implements VoterDao{
     private Connection connexion;
 
-    public UserDaoImpl (Connection cx)   
+    public VoterDaoImpl (Connection cx)   
     {
         connexion=cx;
     }
+
     @Override
-    public boolean create(User a) {
-        
+    public boolean create(Voter a) {
         try {
-            if(find(a.getFirst_name(),a.getLast_name())!=null) /// verif qu'on ait pas deux fois le meme
+            if(find(a.getUser())!=null) /// verif qu'on ait pas deux fois le meme
             {
                 return false;
             }
@@ -39,10 +41,10 @@ public class UserDaoImpl implements UserDao {
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO User(first_name,last_name,email,password,role) VALUES ('%s','%s','%s','%s',%d)", a.getFirst_name(),a.getLast_name(),a.getEmail(),a.getPassword(),a.getRole());
+            formatter.format("INSERT INTO VOTER(user_id) VALUES (%d,%d)",a.getUser().getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
-            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VoterDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
@@ -51,56 +53,53 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean delete(User a) {
-           try {
+    public boolean delete(Voter a) {
+        try {
             
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("DELETE FROM USER WHERE  first_name='%s' AND last_name='%s' ",a.getFirst_name(),a.getLast_name());
+            formatter.format("DELETE FROM VOTER WHERE user_id=%d ",a.getUser().getId());
             int resultat = statement.executeUpdate(sb.toString());
+            ResultSet gk = statement.getGeneratedKeys();
+            if (gk.next()) {
+                a.setId(gk.getInt(1));
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VoterDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
         
         return true;
-        
-        }
+    }
 
     @Override
-    public User find(String email,String password) {
-        
+    public Voter find(User ax) {
         try {
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("SELECT *FROM USER WHERE email='%s' AND password='%s' ",email,password);
+            formatter.format("SELECT *FROM VOTER WHERE user_id=%d ",ax.getId());
             ResultSet resultat = statement.executeQuery(sb.toString());
             if(resultat.next())
             {
-                User u=new User();
+                Voter u=new Voter();
                 u.setId(resultat.getInt("id"));
-                u.setFirst_name(resultat.getString("first_name"));
-                u.setLast_name(resultat.getString("last_name"));
-                u.setEmail(resultat.getString("email"));
-                u.setPassword(resultat.getString("password"));
-                u.setRole(resultat.getInt("role"));
+                u.setUser(ax);
                 return u;
             }
            
         }
         catch(SQLException ex) {
-            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VoterDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
         
         }
         return null;
     }
-    
     
 }

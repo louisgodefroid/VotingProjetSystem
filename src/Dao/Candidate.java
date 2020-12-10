@@ -1,3 +1,6 @@
+package Dao;
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,10 +13,9 @@
  */
 public class Candidate {
     private int id;
-    String first_name;
-    String last_name;
-    String description;
-    Election election;
+    private User user;
+    private String description;
+    private Election election;
     public int getId ()
     {
         return id;
@@ -22,21 +24,13 @@ public class Candidate {
     {
         id=_id;
     }
-    public String getFirst_name ()
+    public User getUser()
     {
-        return first_name;
+        return user;
     }
-    public void setFirst_name (String _first_name)
+    public void setUser(User u)
     {
-        first_name=_first_name;
-    }
-    public String getLast_name ()
-    {
-        return last_name;
-    }
-    public void setLast_name (String _last_name)
-    {
-        last_name=_last_name;
+        user = u;
     }
     public String getDescription()
     {
@@ -49,7 +43,6 @@ public class Candidate {
     public Election getElection ()
     {
         return election;
-    
     }
     public void setElection (Election _election)
     {
