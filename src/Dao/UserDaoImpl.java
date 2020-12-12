@@ -40,7 +40,7 @@ public class UserDaoImpl implements UserDao {
            
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("INSERT INTO User(first_name,last_name,email,password,role) VALUES ('%s','%s','%s','%s',%d)", a.getFirst_name(),a.getLast_name(),a.getEmail(),a.getPassword(),a.getRole());
-            int resultat = statement.executeUpdate(sb.toString());
+            int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
                 a.setId(gk.getInt(1));

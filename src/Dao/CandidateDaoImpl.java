@@ -2,7 +2,6 @@ package Dao;
 
 
 import Controllers.DaoFactory;
-import Views.ICandidateView;
 import Views.IElectionView;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,6 +11,7 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import Views.IWithElectionListView;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -50,7 +50,7 @@ public class CandidateDaoImpl implements CandidateDao{
            
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("INSERT INTO CANDIDATE(user_id,description,election_id) VALUES (%d,'%s',%d)", a.getUser().getId(),a.getDescription(),a.getElection().getId());
-            int resultat = statement.executeUpdate(sb.toString());
+            int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
                 a.setId(gk.getInt(1));

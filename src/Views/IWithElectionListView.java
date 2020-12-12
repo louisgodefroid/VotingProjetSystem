@@ -11,7 +11,7 @@ import Dao.Election;
  *
  * @author Louis
  */
-public interface ICandidateView {
+public interface IWithElectionListView {
     // add an election in the displayed list
     void addElection(Election e);
 }

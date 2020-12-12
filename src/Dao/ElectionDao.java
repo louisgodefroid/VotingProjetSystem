@@ -1,7 +1,7 @@
 package Dao;
 
-import Views.ICandidateView;
 import Views.IElectionView;
+import Views.IWithElectionListView;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,5 +21,5 @@ public interface ElectionDao {
     Election find(int id);
     boolean updateEtat (Election a);
     boolean fillCandidateList(Election e, IElectionView view); 
-    boolean fillElectionList(ICandidateView view);
+    boolean fillElectionList(IWithElectionListView view, boolean openOnly);
 }

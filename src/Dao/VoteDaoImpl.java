@@ -46,7 +46,7 @@ public class VoteDaoImpl implements VoteDao {
            
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("INSERT INTO VOTE(voter_id,candidate_id,election_id) VALUES (%d,%d,%d)", a.getVoter().getId(),a.getCandidate().getId(),a.getElection().getId());
-            int resultat = statement.executeUpdate(sb.toString());
+            int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
                 a.setId(gk.getInt(1));

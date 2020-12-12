@@ -10,7 +10,7 @@ import Dao.CandidateDao;
 import Dao.Election;
 import Dao.ElectionDao;
 import Dao.User;
-import Views.ICandidateView;
+import Views.IWithElectionListView;
 
 public class CandidateController {
     private final DaoFactory factory;
@@ -36,10 +36,10 @@ public class CandidateController {
         return dao.subscribe(c, e);
     }
     
-    public boolean fillElectionList(ICandidateView view)
+    public boolean fillElectionList(IWithElectionListView view)
     {
         ElectionDao dao = factory.getElectionDao();
-        dao.fillElectionList(view);
+        dao.fillElectionList(view, false);
         return false;
     }
 }

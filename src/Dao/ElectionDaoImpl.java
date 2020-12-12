@@ -1,7 +1,6 @@
 package Dao;
 
 
-import Views.ICandidateView;
 import Views.IElectionView;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,6 +10,7 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import Views.IWithElectionListView;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -44,6 +44,7 @@ public class ElectionDaoImpl implements ElectionDao {
             {
                 Election u=new Election();
                 u.setId(election_id);
+                u.setName(resultat.getString("name"));
                 u.setState(resultat.getString("state"));
                 u.setDate(resultat.getString("date"));
                 u.setEtat(resultat.getInt("etat"));
@@ -70,8 +71,8 @@ public class ElectionDaoImpl implements ElectionDao {
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO ELECTION(state,date,etat,election) VALUES ('%s','%s',%d)", a.getState(),a.getDate(),a.getEtat());
-            int resultat = statement.executeUpdate(sb.toString());
+            formatter.format("INSERT INTO ELECTION(name,state,date,etat) VALUES ('%s','%s','%s',%d)", a.getName(), a.getState(),a.getDate(),a.getEtat());
+            int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
                 a.setId(gk.getInt(1));
@@ -112,12 +113,13 @@ public class ElectionDaoImpl implements ElectionDao {
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("SELECT *FROM ELECTION WHERE state='%s' AND date='%s' ",state,date);
+            formatter.format("SELECT * FROM ELECTION WHERE state='%s' AND date='%s' ",state,date);
             ResultSet resultat = statement.executeQuery(sb.toString());
             if(resultat.next())
             {
                 Election u=new Election();
                 u.setId(resultat.getInt("id"));
+                u.setName(resultat.getString("name"));
                 u.setState(resultat.getString("state"));
                 u.setDate(resultat.getString("date"));
                 u.setEtat(resultat.getInt("etat"));
@@ -144,6 +146,7 @@ public class ElectionDaoImpl implements ElectionDao {
             {
                 Election u=new Election();
                 u.setId(id);
+                u.setName(resultat.getString("name"));
                 u.setState(resultat.getString("state"));
                 u.setDate(resultat.getString("date"));
                 u.setEtat(resultat.getInt("etat"));
@@ -161,22 +164,19 @@ public class ElectionDaoImpl implements ElectionDao {
     @Override
       public boolean updateEtat (Election a)
       {
-           try {
-            
+        try {
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("UPTDATE ELECTION SET ETAT=%d WHERE  state='%s' AND date='%s' ",a.getEtat(),a.getState(),a.getDate());
+            formatter.format("UPTDATE ELECTION SET ETAT=%d WHERE id=%d", a.getEtat(), a.getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
             Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
             return false;
         }
-        
         return true;
-      
       }
       
     @Override
@@ -207,19 +207,20 @@ public class ElectionDaoImpl implements ElectionDao {
       }
 
     @Override
-      public boolean fillElectionList(ICandidateView view)
+      public boolean fillElectionList(IWithElectionListView view, boolean openOnly)
       {
         try {
             Statement statement;
             statement = connexion.createStatement();
-            StringBuilder sb = new StringBuilder();
-            Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("SELECT * FROM Election");
-            ResultSet resultat = statement.executeQuery(sb.toString());
+            String query = "SELECT * FROM Election";
+            if (openOnly)
+                query += " WHERE ETAT=2";   // ELECTION_DAY
+            ResultSet resultat = statement.executeQuery(query);
             while(resultat.next())
             {
                 Election e=new Election();
                 e.setId(resultat.getInt("id"));
+                e.setName(resultat.getString("name"));
                 e.setState(resultat.getString("state"));
                 e.setDate(resultat.getString("state"));
                 e.setEtat(resultat.getInt("etat"));
