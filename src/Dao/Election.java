@@ -12,6 +12,7 @@ package Dao;
  */
 public class Election {
     private int id;
+    private String name;
     private String state;
     private String date;
     private int etat;
@@ -28,6 +29,14 @@ public class Election {
     {
         id=_id;
     }    
+     public String getName ()
+    {
+        return name;
+    }
+    public void setName (String _name)
+    {
+        name=_name;
+    }
      public String getState ()
     {
         return state;

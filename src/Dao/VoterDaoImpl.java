@@ -62,7 +62,7 @@ public class VoterDaoImpl implements VoterDao{
            
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("DELETE FROM VOTER WHERE user_id=%d ",a.getUser().getId());
-            int resultat = statement.executeUpdate(sb.toString());
+            int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
                 a.setId(gk.getInt(1));

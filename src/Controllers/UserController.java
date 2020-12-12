@@ -27,7 +27,7 @@ public class UserController {
     public User connect(String email, String pwd)
     {
         UserDao dao=factory.getUserDao();
-        User u = dao.find(email, email);
+        User u = dao.find(email, pwd);
         return u;
     }
     

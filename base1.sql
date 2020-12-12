@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `candidate` (
 DROP TABLE IF EXISTS `election`;
 CREATE TABLE IF NOT EXISTS `election` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) COLLATE latin1_general_cs NOT NULL,
   `state` varchar(30) COLLATE latin1_general_cs NOT NULL,
   `date` varchar(30) COLLATE latin1_general_cs NOT NULL,
   `etat` int(11) NOT NULL,
@@ -90,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `role`) VALUES
-('admin', '', 'admin@yahoo.fr', 'admin', 0);
+('admin', '', 'admin@yahoo.fr', 'admin', 1);
 
 -- --------------------------------------------------------
 
@@ -128,3 +129,9 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+DROP USER IF EXISTS 'louis'@'localhost';
+CREATE USER 'louis'@'localhost' IDENTIFIED BY 'louis';
+GRANT ALL PRIVILEGES ON * . * TO 'louis'@'localhost';
+
+SET GLOBAL time_zone = '+0:00';
