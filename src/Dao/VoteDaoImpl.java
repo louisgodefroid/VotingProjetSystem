@@ -79,5 +79,26 @@ public class VoteDaoImpl implements VoteDao {
         
         return true;
     }
+
+    @Override
+    public boolean exists(Voter v, Election e) {
+        try {
+            Statement statement;
+            statement = connexion.createStatement();
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb, Locale.US);
+            formatter.format("SELECT * FROM VOTE WHERE voter_id=%d and election_id=%d ", v.getId(),e.getId());
+            ResultSet resultat = statement.executeQuery(sb.toString());
+            if(resultat.next())
+            {
+                return true;
+            }
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(VoterDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return false;
+    }
     
 }

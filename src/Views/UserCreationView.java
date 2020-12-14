@@ -5,10 +5,10 @@
  */
 package Views;
 
-import Controllers.DaoFactory;
-import Dao.ElectionDao;
+import Controllers.UserController;
+import Dao.Candidate;
 import Dao.User;
-import Dao.UserDao;
+import Dao.Voter;
 import java.sql.Connection;
 
 /**
@@ -16,7 +16,8 @@ import java.sql.Connection;
  * @author louis
  */
 public class UserCreationView extends javax.swing.JFrame {
-    private Connection connection;
+    private final UserController controller;
+    private final IWithUserListView userView;
 
     private final String ADMIN = "admin";
     private final String VOTER = "voter";
@@ -24,12 +25,14 @@ public class UserCreationView extends javax.swing.JFrame {
     /**
      * Creates new form UserCreationView
      */
-    public UserCreationView(Connection cx) {
+    public UserCreationView(Connection cx, IWithUserListView view) {
         initComponents();
-        connection = cx;
+        setTitle("User");
+        controller = new UserController(cx);
         jComboBox1.addItem(ADMIN);
         jComboBox1.addItem(VOTER);
         jComboBox1.addItem(CANDIDATE);
+        userView = view;
     }
 
     /**
@@ -72,8 +75,6 @@ public class UserCreationView extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel5.setText("Role:");
 
@@ -126,7 +127,7 @@ public class UserCreationView extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addGap(22, 22, 22))
         );
@@ -136,28 +137,29 @@ public class UserCreationView extends javax.swing.JFrame {
 
     // create user
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        User u = new User();
-        u.setFirst_name(jTextField1.getText());
-        u.setLast_name(jTextField2.getText());
-        u.setEmail(jTextField3.getText());
-        u.setPassword(jTextField4.getText());
+        String firstName = jTextField1.getText();
+        String lastName = jTextField2.getText();
+        String email = jTextField3.getText();
+        String password = jTextField4.getText();
         String selection = (String)jComboBox1.getSelectedItem();
+        User u;
         switch (selection)
         {
             case ADMIN:
-                u.setRole(User.ADMIN);
+                u = controller.createAdmin(firstName, lastName, email, password);
+                userView.addUser(u);
                 break;
             case VOTER:
-                u.setRole(User.VOTANT);
+                Voter v = controller.createVotant(firstName, lastName, email, password);
+                u = v.getUser();
+                userView.addUser(u);
                 break;
             case CANDIDATE:
-                u.setRole(User.CANDIDAT);
+                Candidate c = controller.createCandidate(firstName, lastName, email, selection, password);
+                u = c.getUser();
+                userView.addUser(u);
                 break;
         }
-        DaoFactory factory = new DaoFactory(connection);
-        UserDao dao = factory.getUserDao();
-        dao.create(u);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed

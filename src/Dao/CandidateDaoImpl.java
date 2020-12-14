@@ -2,7 +2,6 @@ package Dao;
 
 
 import Controllers.DaoFactory;
-import Views.IElectionView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,22 +33,16 @@ public class CandidateDaoImpl implements CandidateDao{
     @Override
     public boolean create(Candidate a) {
          try {
-             if(a.getElection()==null)
-             {
-                 System.out.println("Erreur objet election manquant");
-                 return false;
-             }
             if(find(a.getUser())!=null) /// verif qu'on ait pas deux fois le meme
             {
                 return false;
             }
-                
             Statement statement;
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO CANDIDATE(user_id,description,election_id) VALUES (%d,'%s',%d)", a.getUser().getId(),a.getDescription(),a.getElection().getId());
+            formatter.format("INSERT INTO CANDIDATE(user_id,description,election_id) VALUES (%d,'%s',0)", a.getUser().getId(),a.getDescription());
             int resultat = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet gk = statement.getGeneratedKeys();
             if (gk.next()) {
@@ -106,7 +99,7 @@ public class CandidateDaoImpl implements CandidateDao{
                 c.setDescription(resultat.getString("description"));
                 DaoFactory factory = new DaoFactory(connexion);
                 ElectionDao dao = factory.getElectionDao();
-                c.setElection(dao.load(u.getId()));
+                c.setElection(dao.load(resultat.getInt("election_id")));
                 return c;
             }
         }
@@ -118,7 +111,7 @@ public class CandidateDaoImpl implements CandidateDao{
     }
     
     @Override
-    public boolean subscribe(Candidate a, Election e)
+    public boolean register(Candidate a, Election e)
     {
         try {
             Statement statement;
@@ -128,6 +121,7 @@ public class CandidateDaoImpl implements CandidateDao{
             Formatter formatter = new Formatter(sb, Locale.US);
             formatter.format("UPDATE CANDIDATE SET election_id=%d WHERE id=%d", e.getId(),a.getId());
             int resultat = statement.executeUpdate(sb.toString());
+            a.setElection(e);
         } catch (SQLException ex) {
             Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex.getMessage());
@@ -136,4 +130,22 @@ public class CandidateDaoImpl implements CandidateDao{
         return true;        
     }
     
+    @Override
+    public boolean unregister(Candidate a)
+    {
+        try {
+            Statement statement;
+            statement = connexion.createStatement();
+            StringBuilder sb = new StringBuilder();
+           
+            Formatter formatter = new Formatter(sb, Locale.US);
+            formatter.format("UPDATE CANDIDATE SET election_id=0 WHERE id=%d", a.getId());
+            int resultat = statement.executeUpdate(sb.toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(CandidateDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;        
+    }
 }

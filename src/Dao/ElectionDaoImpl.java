@@ -1,7 +1,6 @@
 package Dao;
 
-
-import Views.IElectionView;
+import Views.IWithCandidateListView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -169,7 +168,7 @@ public class ElectionDaoImpl implements ElectionDao {
             statement = connexion.createStatement();
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("UPTDATE ELECTION SET ETAT=%d WHERE id=%d", a.getEtat(), a.getId());
+            formatter.format("UPDATE ELECTION SET ETAT=%d WHERE id=%d", a.getEtat(), a.getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
             Logger.getLogger(ElectionDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -180,7 +179,7 @@ public class ElectionDaoImpl implements ElectionDao {
       }
       
     @Override
-      public boolean fillCandidateList(Election e, IElectionView view)
+      public boolean fillCandidateList(Election e, IWithCandidateListView view)
       {
         try {
             Statement statement;
@@ -222,7 +221,7 @@ public class ElectionDaoImpl implements ElectionDao {
                 e.setId(resultat.getInt("id"));
                 e.setName(resultat.getString("name"));
                 e.setState(resultat.getString("state"));
-                e.setDate(resultat.getString("state"));
+                e.setDate(resultat.getString("date"));
                 e.setEtat(resultat.getInt("etat"));
                 view.addElection(e);
             }

@@ -8,7 +8,7 @@ import Dao.Vote;
 import Dao.VoteDao;
 import Dao.Voter;
 import Dao.VoterDao;
-import Views.IElectionView;
+import Views.IWithCandidateListView;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -29,7 +29,7 @@ public class VoteController {
         return dao.find(v);
     }
     
-    public boolean fillCandidateList(Election e, IElectionView view)
+    public boolean fillCandidateList(Election e, IWithCandidateListView view)
     {
         ElectionDao dao = factory.getElectionDao();
         return dao.fillCandidateList(e, view);

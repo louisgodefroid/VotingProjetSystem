@@ -71,6 +71,10 @@ public class User {
         role=_role;
     }
     
-    
+    @Override
+    public String toString()
+    {
+        return first_name + " / " + last_name + " / " + email;
+    }
 }
 

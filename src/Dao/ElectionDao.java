@@ -1,6 +1,6 @@
 package Dao;
 
-import Views.IElectionView;
+import Views.IWithCandidateListView;
 import Views.IWithElectionListView;
 
 /*
@@ -20,6 +20,6 @@ public interface ElectionDao {
     Election find (String state,String date);
     Election find(int id);
     boolean updateEtat (Election a);
-    boolean fillCandidateList(Election e, IElectionView view); 
+    boolean fillCandidateList(Election e, IWithCandidateListView view); 
     boolean fillElectionList(IWithElectionListView view, boolean openOnly);
 }

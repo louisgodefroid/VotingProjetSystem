@@ -1,5 +1,7 @@
 package Dao;
 
+import Views.IWithElectionListView;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,5 +15,6 @@ public interface CandidateDao {
     boolean create (Candidate a);
     boolean delete(Candidate a);
     Candidate find (User u);
-    boolean subscribe(Candidate a, Election e);
+    boolean register(Candidate a, Election e);
+    boolean unregister(Candidate a);
 }

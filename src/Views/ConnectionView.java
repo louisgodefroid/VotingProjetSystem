@@ -1,5 +1,6 @@
 package Views;
 
+import Controllers.ConnectionController;
 import Controllers.DaoFactory;
 import Controllers.UserController;
 import Dao.User;
@@ -18,57 +19,17 @@ import java.sql.SQLException;
  * @author Louis
  */
 public class ConnectionView extends javax.swing.JFrame {
-    private UserController userCtl;
-    private Connection cx;
+    private ConnectionController controller;
+
     /**
      * Creates new form UserVoterView
      */
     public ConnectionView() {
         initComponents();
-        cx = getConnection();
-        if (cx != null)
-        {
-            DaoFactory dao = new DaoFactory(cx);
-            userCtl = new UserController(dao);
-        }
+        setTitle("Connection");
+        controller = new ConnectionController();
     }
 
-    private Connection getConnection()
-    {
-        try {
-            Class.forName( "com.mysql.jdbc.Driver" );
-        } catch ( ClassNotFoundException e ) {
-            // Gérer les éventuelles erreurs ici. 
-            System.out.println("Echec de chargement du driver");
-            return null;
-        }
-                // Connexion à la base de données 
-        String url = "jdbc:mysql://localhost:3306/base1";
-        String utilisateur = "louis";
-        String motDePasse = "louis";
-        
-        try {
-            return DriverManager.getConnection( url, utilisateur, motDePasse );
-        } catch ( SQLException e ) {
-            // Gérer les éventuelles erreurs ici 
-            System.out.println("Echec de la connexion:"+e.getMessage());
-        }
-        return null;
-    }
-    
-    private void closeConnection(Connection cx)
-    {
-        if ( cx != null )
-        {
-            try {
-                // Fermeture de la connexion 
-                cx.close();
-            } catch ( SQLException ignore ) {
-                // Si une erreur survient lors de la fermeture, il suffit de l'ignorer. 
-                System.out.println("Echec fermeture de la connexion:"+ignore.getMessage());
-            }
-        }
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -137,26 +98,11 @@ public class ConnectionView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // connection button
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         String email = jTextField1.getText();
         String pwd = new String(jPasswordField1.getPassword());
-        User u = userCtl.connect(email, pwd);
-        if (u != null)
-        {
-            switch (u.getRole())
-            {
-                case User.ADMIN:
-                    new UserAdminView(u, cx).setVisible(true);
-                    break;
-                case User.VOTANT:
-                    new UserVoterView(u, cx).setVisible(true);
-                    break;
-                case User.CANDIDAT:
-                    new UserCandidateView(u, cx).setVisible(true);
-                    break;
-            }
-        }
+        controller.connect(email, pwd);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

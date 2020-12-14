@@ -56,11 +56,14 @@ public class Election {
     public int getEtat ()
     {
         return etat;
-    
     }
     public void setEtat(int _etat)
     {
         etat=_etat;
-    
+    }
+    @Override
+    public String toString()
+    {
+        return name+" / "+state+" / "+date;
     }
 }

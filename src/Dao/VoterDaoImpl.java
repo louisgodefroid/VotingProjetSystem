@@ -41,7 +41,7 @@ public class VoterDaoImpl implements VoterDao{
             StringBuilder sb = new StringBuilder();
            
             Formatter formatter = new Formatter(sb, Locale.US);
-            formatter.format("INSERT INTO VOTER(user_id) VALUES (%d,%d)",a.getUser().getId());
+            formatter.format("INSERT INTO VOTER(user_id) VALUES (%d)",a.getUser().getId());
             int resultat = statement.executeUpdate(sb.toString());
         } catch (SQLException ex) {
             Logger.getLogger(VoterDaoImpl.class.getName()).log(Level.SEVERE, null, ex);

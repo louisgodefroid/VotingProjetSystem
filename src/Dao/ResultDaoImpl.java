@@ -1,6 +1,7 @@
 package Dao;
 
 
+import Views.IWithResultListView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -100,4 +101,27 @@ public class ResultDaoImpl implements ResultDao {
         return null;
     }
     
+    @Override
+    public boolean fillResultList(Election e, IWithResultListView view)
+    {
+        try {
+            Statement statement;
+            statement = connexion.createStatement();
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb, Locale.US);
+            formatter.format("SELECT u.first_name, u.last_name, r.ballot_count FROM Result r, Candidate c, User u WHERE candidate_id=c.id AND c.user_id=u.id AND election_id=%d ",e.getId());
+            ResultSet resultat = statement.executeQuery(sb.toString());
+            while(resultat.next())
+            {
+                String str = resultat.getInt(3) + " ballots for " + resultat.getString(1) +  " " + resultat.getString(2);
+                view.addResult(str);
+            }
+            return true;
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return false;        
+    }
 }

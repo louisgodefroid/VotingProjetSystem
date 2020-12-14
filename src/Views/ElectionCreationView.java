@@ -6,6 +6,7 @@
 package Views;
 
 import Controllers.DaoFactory;
+import Controllers.ElectionCreationController;
 import Dao.Election;
 import Dao.ElectionDao;
 import java.sql.Connection;
@@ -15,15 +16,15 @@ import java.sql.Connection;
  * @author louis
  */
 public class ElectionCreationView extends javax.swing.JFrame {
-    private Connection connection;
-    private IWithElectionListView electionView;
+    private ElectionCreationController controller;
+    
     /**
      * Creates new form ElectionCreationView
      */
     public ElectionCreationView(Connection cx, IWithElectionListView view) {
         initComponents();
-        connection = cx;
-        electionView = view;
+        controller = new ElectionCreationController(cx, view);
+        setTitle("Election");
     }
 
     /**
@@ -109,15 +110,10 @@ public class ElectionCreationView extends javax.swing.JFrame {
     // create new Election
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Election e = new Election();
-        e.setName(jTextField1.getText());
-        e.setState(jTextField2.getText());
-        e.setDate(jTextField3.getText());
-        e.setEtat(Election.BEFORE_ELECTION);
-        DaoFactory factory = new DaoFactory(connection);
-        ElectionDao dao = factory.getElectionDao();
-        dao.create(e);
-        electionView.addElection(e);
+        String name = jTextField1.getText();
+        String state = jTextField2.getText();
+        String date = jTextField3.getText();
+        controller.create(name, state, date);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed

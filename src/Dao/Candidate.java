@@ -48,4 +48,9 @@ public class Candidate {
     {
         election=_election;
     }
+    @Override
+    public String toString()
+    {
+        return user.toString();
+    }
 }

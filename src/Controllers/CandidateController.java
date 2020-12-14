@@ -14,6 +14,7 @@ import Views.IWithElectionListView;
 
 public class CandidateController {
     private final DaoFactory factory;
+
     public CandidateController(DaoFactory f)
     {
         factory=f;
@@ -33,7 +34,7 @@ public class CandidateController {
     {
         c.setElection(e);
         CandidateDao dao = factory.getCandidateDao();
-        return dao.subscribe(c, e);
+        return dao.register(c, e);
     }
     
     public boolean fillElectionList(IWithElectionListView view)

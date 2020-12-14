@@ -5,14 +5,13 @@
  */
 package Views;
 
-import Dao.Candidate;
+import Dao.User;
 
 /**
  *
- * @author Louis
+ * @author louis
  */
-public interface IElectionView {
-    // add a candidate to the displayed list
-    void addCandidate(Candidate c);
-    
+public interface IWithUserListView {
+    // add a user in the displayed list
+    void addUser(User e);   
 }

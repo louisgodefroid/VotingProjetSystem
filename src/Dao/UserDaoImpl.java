@@ -1,6 +1,7 @@
 package Dao;
 
 
+import Views.IWithUserListView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -98,6 +99,31 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
-    
-    
+
+    @Override
+    public boolean fillUserList(IWithUserListView view) {
+        try {
+            Statement statement;
+            statement = connexion.createStatement();
+            String query = "SELECT * FROM User";
+            ResultSet resultat = statement.executeQuery(query);
+            while(resultat.next())
+            {
+                User e=new User();
+                e.setId(resultat.getInt("id"));
+                e.setFirst_name(resultat.getString("first_name"));
+                e.setLast_name(resultat.getString("last_name"));
+                e.setPassword(resultat.getString("password"));
+                e.setEmail(resultat.getString("email"));
+                e.setRole(resultat.getInt("role"));
+                view.addUser(e);
+            }
+            return true;
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(UserDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
+        }
+        return false;
+    }
 }

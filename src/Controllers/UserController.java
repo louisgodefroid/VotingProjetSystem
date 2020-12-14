@@ -1,10 +1,13 @@
 package Controllers;
 
-
 import Dao.Candidate;
 import Dao.CandidateDao;
 import Dao.User;
 import Dao.UserDao;
+import Dao.Voter;
+import Dao.VoterDao;
+import Views.IWithUserListView;
+import java.sql.Connection;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,18 +20,11 @@ import Dao.UserDao;
  * @author 
  */
 public class UserController {
-  
-    private DaoFactory factory;
-    public UserController(DaoFactory f)
+    private final DaoFactory factory;
+
+    public UserController(Connection cx)
     {
-      factory=f;
-    }
-    
-    public User connect(String email, String pwd)
-    {
-        UserDao dao=factory.getUserDao();
-        User u = dao.find(email, pwd);
-        return u;
+        factory = new DaoFactory(cx);
     }
     
     public ElectionController getElectionController(User u)
@@ -72,9 +68,14 @@ public class UserController {
         dao.create(c);
         return c;
     }
-    public User createVotant (String first_name, String last_name, String email, String password)
+    public Voter createVotant (String first_name, String last_name, String email, String password)
     {
-        return create(first_name,last_name,email,password,User.VOTANT);
+        User u = create(first_name,last_name,email,password,User.VOTANT);
+        VoterDao vDao = factory.getVoterDao();
+        Voter v = new Voter();
+        v.setUser(u);
+        vDao.create(v);
+        return v;
     }
     public boolean delete (User u)
     {
@@ -83,12 +84,19 @@ public class UserController {
             // delete candidate too
             CandidateDao dao=factory.getCandidateDao();
             Candidate c = dao.find(u);
-            return dao.delete(c);
+            dao.delete(c);
         }
-        else
+        else if (u.getRole() == User.VOTANT)
         {
-            UserDao dao=factory.getUserDao();
-            return dao.delete(u);
+            VoterDao dao = factory.getVoterDao();
+            Voter v = dao.find(u);
+            dao.delete(v);
         }
+        UserDao dao=factory.getUserDao();
+        return dao.delete(u);
+    }
+    public void fillUserList(IWithUserListView view){
+        UserDao dao=factory.getUserDao();
+        dao.fillUserList(view);
     }
 }
